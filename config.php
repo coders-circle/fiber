@@ -5,7 +5,7 @@
 
 define("HOST",      "localhost");
 define("USER",      "root");
-define("PASSWORD",  "noob");
+define("PASSWORD",  "root");
 define("DATABASE",  "fiber-db");
 
 define("ROOTDIR", __DIR__);

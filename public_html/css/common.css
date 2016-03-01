@@ -1,0 +1,49 @@
+body{
+    font-family: 'Lato', sans-serif;
+    background-color: #fafafa;
+    color: #717171;
+    padding: 0px;
+}
+
+a, a:visited, a:hover, a:focus{
+    outline: none;
+    text-decoration: none;
+}
+
+a, a:visited, a:focus{
+    color: #969696;
+    transition: .2s;
+}
+
+a:hover{
+    color: #646464;
+}
+
+#title-block{
+    padding: 30px;
+    background-color: #7f8c8d;
+
+}
+
+#title-block .title{
+    font-size: 2em;
+    color: #fff;
+}
+
+#title-block .extra{
+    font-size: 1.23em;
+    color: #bdc3c7;
+}
+
+#title-block .menu-item{
+    margin-left: 50px;
+}
+
+#content-block{
+    padding: 50px 30px;
+}
+
+.page-title{
+    font-size: 3em;
+    margin-bottom: 24px;
+}
