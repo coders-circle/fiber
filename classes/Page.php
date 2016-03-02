@@ -3,19 +3,9 @@
 require_once 'Model.php';
 require_once 'View.php';
 require_once 'Controller.php';
+require_once 'utils.php';
 
 class Exception404 extends Exception {
-}
-
-function to_camel_case($str) {
-    // Split string in words.
-    $words = explode('_', strtolower($str));
-
-    $return = '';
-    foreach ($words as $word) {
-        $return .= ucfirst(trim($word));
-    }
-    return $return;
 }
 
 class Page

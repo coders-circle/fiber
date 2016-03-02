@@ -4,9 +4,9 @@ require_once "../classes/ModelObject.php";
 class Example extends ModelObject
 {
     // When schema is not defined explicitly, it is automatically
-    // deduced from the properties of the first User object that is saved.
+    // deduced from the properties of the first object that is saved.
 
-    $example_data = "example";
+    public $example_data = "example";
 
     // Optionally, one may define the schema as follows.
     // Explicitly defining the schema has certain advantages:
