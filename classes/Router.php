@@ -12,7 +12,6 @@ class Router extends RouterBase
 
             // Template redirection rules
             "fiber" => array("template", "fiber.html"),
-            "example" => array('template', 'example.html'),
 
             // Controller redirection rules
             // This one is optional as controller name matches the rule
