@@ -34,7 +34,7 @@ class Template
         var_dump($blocks);
     }
 
-    public function process($model)
+    public function process($data)
     {
         $content = file_get_contents(ROOTDIR.'/views/'.$this->file);
 
@@ -91,7 +91,7 @@ class Template
             {
                 $key = trim($matches[1][$i]);
                 $content = str_replace($matches[0][$i],
-                    array_key_exists($key, $model->data)? $model->data[$key] : "",
+                    array_key_exists($key, $data)? $data[$key] : "",
                     $content);
             }
         }

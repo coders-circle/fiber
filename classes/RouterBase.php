@@ -59,12 +59,12 @@ class RouterBase
                         $page->set_template($rule[1]);
                     }
                     else if ($rule[0] == "controller") {
-                        $controller = new $rule[1]($page->get_model());
+                        $controller = new $rule[1]();
                     }
                 }
                 else {
                     $class_name = to_camel_case($routes[0]) . 'Controller';
-                    $controller = new $class_name($page->get_model());
+                    $controller = new $class_name();
                 }
 
                 if ($controller) {

@@ -1,19 +1,13 @@
 <?php
-require_once "../classes/ModelObject.php";
+require_once "../classes/Model.php";
 
-class Example extends ModelObject
+class Example extends Model
 {
-    // When schema is not defined explicitly, it is automatically
-    // deduced from the properties of the first object that is saved.
-
-    public $example_data = "example";
-
-    // Optionally, one may define the schema as follows.
-    // Explicitly defining the schema has certain advantages:
-    //
-    // * One can specify further attributes for SQL fields like max_length
-    // * One can set properties for a Model which are not fields in schema
-    //
+    // Define the current schema
+    // Make sure to migrate:
+    // * once at first, to create the table
+    // * whenever the schema is changed, to alter the table
+    
     public function get_schema() {
         return array(
             array("example_data", "string")

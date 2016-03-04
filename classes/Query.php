@@ -84,7 +84,7 @@ class Query
 
     public function first() {
         $objects = $this->get();
-        if (len($objects)==0)
+        if (count($objects)==0)
             return null;
         return $objects[0];
     }

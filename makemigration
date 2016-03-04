@@ -1,0 +1,67 @@
+#!/usr/bin/php
+<?php
+
+// Act as if we are working from the models directory
+chdir("models");
+
+require_once '../classes/Migration.php';
+require_once '../libs/dbStruct.php';
+
+$db = Database::get_instance();
+
+// Get the model
+
+if (count($argv)==1) {
+    die("\tInvalid Syntax\n\tUsage: makemigration model_name\n\n");
+}
+$model = $argv[1];
+// TODO: Check if valid model
+require_once "$model.php";
+$obj = new $model();
+
+$final_sql = "";
+
+// If the model does not exist, create it
+if (!$obj->exists()) {
+    $sql = $obj->get_create_table_sql();
+    $final_sql = $sql;
+}
+
+// If it does, get last sql and new sql and
+// compare them for upgrade sql
+else {
+    $table = $obj->get_table_name();
+    $result = $db->query_with_error("SHOW CREATE TABLE $table");
+
+    if ($row = $result->fetch_assoc()) {
+        $last_sql = $row["Create Table"];
+        $current_sql = $obj->get_create_table_sql();
+
+        $updater = new dbStructUpdater();
+        $res = $updater->getUpdates($last_sql, $current_sql, true);
+        $final_sql = $res;
+    }
+}
+
+if (trim($final_sql) == '') {
+    echo "No new changes detected in the schema!\n";
+} else {
+    // check if last migration and this one are same
+    $version = Migration::get_migration_version($model);
+    $last_migration_sql = Migration::get_migration($model, $version);
+    if ($last_migration_sql == $final_sql) {
+        echo "No new changes detected.\n";
+        echo "However you may have unapplied migrations.\n";
+        die();
+    }
+
+    $version = $version+1;
+    $output_file = "migrations/" . $model . "_" . $version . ".sql";
+
+    echo "$final_sql\n";
+    echo "Saving to ... $output_file\n";
+
+    file_put_contents("../$output_file", $final_sql);
+    echo "Done !\n";
+}
+ ?>

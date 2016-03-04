@@ -37,7 +37,7 @@ Controllers perform some processing, optionally accessing the database, and pass
 
 ### Controllers and Views
 
-Every controller is held in a class derived from the `Controller` base class and is stored inside the *controls* directory. A controller returns a `View` object. A view is constructed from a template, which defines the HTML page to be presented, and a model, which stores data that the template may use.
+Every controller is held in a class derived from the `Controller` base class and is stored inside the *controls* directory. A controller returns a `View` object. A view is constructed from a template, which defines the HTML page to be presented, and optionally some data that the template may use.
 
 An example controller is:
 
@@ -48,7 +48,8 @@ class ExampleController extends Controller
 {
     public function get()
     {
-        return new View($this->model, 'example.html');
+        return new View('example.html');
+        // return new View('example.html', array("my_data"=>"my_value"));
     }
 }
 
@@ -63,60 +64,34 @@ A controller class can have different methods that are called by the framework t
 * `get($x, $y)` : handles GET requests for urls of form *&lt;controller&gt;/x/y/* where strings `x` and `y` are passed as parameters to the method
 * `get_foo($x, $y)` : handles GET requests for urls of form *&lt;controller&gt;/foo/x/y/* where `x` and `y` are again passed as parameters to the method
 
-A View object is created with an instance of `Model` which can store a bunch of data and a template file. The template can then use the data stored inside the model.
-
-```php
-$this->model["var1"] = value1;
-return new View($this->model, 'my_template.html');
-```
-
-### Template
+### Templates
 
 Templates are basic text pages, mostly HTML documents, that can be used as views or can be directly displayed by routing a path to it.
 
 TODO Template tags
 
-### ORM
+### Models
 
-Each database table can be accessed with a simple `ModelObject`. Every such table is defined as a PHP Class extending the `ModelObject` class with properties defined for the fields.
-
-```php
-<?php
-require_once "../classes/ModelObject.php";
-
-class Example extends ModelObject
-{
-    // When schema is not defined explicitly, it is automatically
-    // deduced from the properties of the first object that is saved.
-
-    public $example_data_string = "example";
-    public $example_data_integer = 15;
-    public $example_data_boolean = true;
-}
-
-?>
-```
-
-One can specify schema of the table explicitly without setting the properties like above. This is done as follows:
+Each database table can be accessed with a simple `Model`, where the schema is defined using array of properties, where each property is an array defining the name of the field, its type and other attributes like max_length.
 
 ```php
 <?php
-require_once "../classes/ModelObject.php";
+require_once "../classes/Model.php";
 
-class Example extends ModelObject
+class Example extends Model
 {
-    // Optionally, one may define the schema as follows.
-    // Explicitly defining the schema has certain advantages:
-    //
-    // * One can specify further attributes for SQL fields like max_length
-    // * One can set properties for an instance which are not fields in schema
-
     public function get_schema() {
+        // schema is array of properties
+        // each property being the tuple: (field-name, type, [attribute,...])
+
         return array(
             array("example_data", "string"),
-            array("example_data2", "string", "max_length"=>12)
+            array("example_data2", "string", "max_length"=>12),
+            array("example_data3", "integer")
         );
     }
+
+    public $example_data3 = 15; // default value
 }
 
 ?>
@@ -153,6 +128,13 @@ $users = User::query()->where("first_name=?", "Bibek")->select("last_name")->get
 
 ### Migration
 
-Database migrations can be performed by storing files of names with syntax *&lt;table_name&gt;_&lt;version&gt;.sql* inside the *migrations* folder. Migrations are performed by checking current table version with all migration files for that table. Each new migration is then applied by running the sql stored.
+Every time, you create a model and define its schema, and every time you change schema of any model, you should *migrate* the changes for them to be reflected in your database.
 
-TODO Running the migrations
+Each migration is defined by the sql statements that perform the required changes to the database. The migration is stored in a file *&lt;table_name&gt;_&lt;version&gt;.sql&* inside the *migrations* directory. The version of each schema is kept tracked by a special table *schema_versions* in the database. This way, any new migration can be detected and applied whenever required. Note that you do not need to create these migration files yourself, though you can if you need to.
+
+Two utilities `makemigration` and `migrate`, which are basically php scripts, are available for migration purposes. The `makemigration` command automatically detects any new changes in the schema definition and generates a migration file with naming convention mentioned above. The `migrate` command then apply any new migrations present for a model, effectively changing the database.
+
+```bash
+php makemigration MyModel
+php migrate MyModel
+```

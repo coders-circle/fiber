@@ -1,22 +1,21 @@
 <?php
 
-require_once 'Model.php';
 require_once 'Template.php';
 
 class View
 {
-    private $model;
+    private $data;
     private $template;
 
-    public function __construct($model, $template_file_name)
+    public function __construct($template_file_name, $data=array())
     {
-        $this->model = $model;
+        $this->data = $data;
         $this->template = new Template($template_file_name);
     }
 
     public function render()
     {
-        $this->template->process($this->model);
+        $this->template->process($this->data);
     }
 }
 

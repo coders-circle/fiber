@@ -1,0 +1,18 @@
+#!/usr/bin/php
+<?php
+
+// Act as if we are working from the models directory
+chdir("models");
+
+require_once '../classes/Migration.php';
+
+// Get the model
+if (count($argv)==1) {
+    die("\tInvalid Syntax\n\tUsage: migrate model_name\n\n");
+}
+$model = $argv[1];
+// TODO: Check if model exists
+
+// Run the migrations
+Migration::run_migrations($model);
+?>

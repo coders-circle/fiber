@@ -1,6 +1,5 @@
 <?php
 
-require_once 'Model.php';
 require_once 'View.php';
 require_once 'Controller.php';
 require_once 'utils.php';
@@ -10,7 +9,6 @@ class Exception404 extends Exception {
 
 class Page
 {
-    private $model;
     private $view;
     private $controller;
     private $method;
@@ -19,17 +17,11 @@ class Page
 
     public function __construct()
     {
-        $this->model = new Model();
     }
 
     public function set_template($template_file_name)
     {
-        $this->view = new View($this->model, $template_file_name);
-    }
-
-    public function get_model()
-    {
-        return $this->model;
+        $this->view = new View($template_file_name);
     }
 
     public function set_controller($controller)
