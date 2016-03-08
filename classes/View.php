@@ -2,20 +2,15 @@
 
 require_once 'Template.php';
 
-class View
-{
-    private $data;
-    private $template;
+class View {
+    protected $text;
 
-    public function __construct($template_file_name, $data=array())
-    {
-        $this->data = $data;
-        $this->template = new Template($template_file_name);
+    public function __construct($text) {
+        $this->text = $text;
     }
 
-    public function render()
-    {
-        $this->template->process($this->data);
+    public function render() {
+        echo $this->text;
     }
 }
 

@@ -95,7 +95,7 @@ class Template
                     $content);
             }
         }
-        echo $content;
+        return $content;
     }
 }
 

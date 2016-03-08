@@ -1,6 +1,6 @@
 <?php
 
-require_once 'View.php';
+require_once 'TemplateView.php';
 require_once 'Controller.php';
 require_once 'utils.php';
 
@@ -21,7 +21,7 @@ class Page
 
     public function set_template($template_file_name)
     {
-        $this->view = new View($template_file_name);
+        $this->view = new TemplateView($template_file_name);
     }
 
     public function set_controller($controller)

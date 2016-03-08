@@ -7,6 +7,7 @@ class Session {
     }
 
     public static function destroy() {
+        self::reset();
         session_destroy();
     }
 

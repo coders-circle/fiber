@@ -24,6 +24,7 @@ class Auth {
 
     // Assumes that the user object has password and id fields
     public static function authenticate($user, $password) {
+        self::logout();
         if (self::verify_user($user, $password)) {
             self::login($user);
             return true;

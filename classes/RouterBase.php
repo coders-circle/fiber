@@ -65,8 +65,7 @@ class RouterBase
                     }
                 }
                 else {
-                    $class_name = to_camel_case($routes[0]) . 'Controller';
-                    $controller = new $class_name();
+                    throw new Exception404();
                 }
 
                 if ($controller) {

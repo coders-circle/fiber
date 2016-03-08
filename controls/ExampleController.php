@@ -10,7 +10,12 @@ class ExampleController extends Controller
         $user->username = $username;
         Auth::set_password($user, $password);
         $user->save();
-        return new View('example.html');
+        return new View("Created user $username succesfully !");
+    }
+
+    public function get_logout() {
+        Auth::logout();
+        return new View("You have logged out successfully !");
     }
 
     public function get_test($username=null, $password=null)
@@ -35,7 +40,7 @@ class ExampleController extends Controller
                 $data["message"] = "Hello " . $user->username . " !";
         }
 
-        return new View('example.html', $data);
+        return new TemplateView('example.html', $data);
     }
 
     public function get()
@@ -43,7 +48,7 @@ class ExampleController extends Controller
         $data = array(
             "message" => "hello world!"
         );
-        return new View('example.html', $data);
+        return new TemplateView('example.html', $data);
     }
 }
 
