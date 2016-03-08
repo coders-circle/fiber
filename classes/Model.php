@@ -39,9 +39,9 @@ class Model
                     $sql .= ", `$name` $type NOT NULL";
                 }
 
-                $extras = get_item($item, "extras");
-                if ($extras) {
-                    $sql .= " $extras";
+                $extra = get_item($item, "extra");
+                if ($extra) {
+                    $sql .= " $extra";
                 }
             }
         }
