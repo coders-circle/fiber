@@ -130,7 +130,7 @@ $users = User::query()->where("first_name=?", "Bibek")->select("last_name")->get
 
 Every time, you create a model and define its schema, and every time you change schema of any model, you should *migrate* the changes for them to be reflected in your database.
 
-Each migration is defined by the sql statements that perform the required changes to the database. The migration is stored in a file *&lt;table_name&gt;_&lt;version&gt;.sql&* inside the *migrations* directory. The version of each schema is kept tracked by a special table *schema_versions* in the database. This way, any new migration can be detected and applied whenever required. Note that you do not need to create these migration files yourself, though you can if you need to.
+Each migration is defined by the sql statements that perform the required changes to the database. The migration is stored in a file *&lt;table_name&gt;_&lt;version&gt;.sql* inside the *migrations* directory. The version of each schema is kept tracked by a special table *schema_versions* in the database. This way, any new migration can be detected and applied whenever required. Note that you do not need to create these migration files yourself, though you can if you need to.
 
 Two utilities `makemigration` and `migrate`, which are basically php scripts, are available for migration purposes. The `makemigration` command automatically detects any new changes in the schema definition and generates a migration file with naming convention mentioned above. The `migrate` command then apply any new migrations present for a model, effectively changing the database.
 

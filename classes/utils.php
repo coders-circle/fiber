@@ -20,23 +20,6 @@ function to_snake_case($input) {
     return implode('_', $ret);
 }
 
-function get_sql_type($type, $max_length=null) {
-    switch (strtolower($type)) {
-        case 'integer':
-            if (!$max_length)
-                $max_length = 11;
-            return "INT($max_length)";
-        case 'string':
-            if (!$max_length)
-                $max_length = 30;
-            return "VARCHAR($max_length)";
-        case 'boolean':
-            return "BOOL";
-        default:
-            return null;
-    }
-}
-
 function get_item($array, $key, $default=null) {
     if ($array && key_exists($key, $array))
         return $array[$key];

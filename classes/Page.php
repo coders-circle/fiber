@@ -48,6 +48,7 @@ class Page
     {
         if( $this->controller )
         {
+
             if (! $this->method )
                 $this->method = "get";
 

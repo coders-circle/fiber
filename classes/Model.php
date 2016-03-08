@@ -4,6 +4,7 @@ require_once 'Query.php';
 
 class Model
 {
+
     public function get_schema() {
         return null;
     }
@@ -31,11 +32,16 @@ class Model
         if ($schema) {
             foreach ($schema as $item) {
                 $name = $item[0];
-                $len = get_item($item, "max_length", null);
-                $type = get_sql_type($item[1], $len);
+                $len = get_item($item, "max_length");
+                $type = self::get_sql_type($item[1], $len);
 
                 if ($type && $name) {
                     $sql .= ", `$name` $type NOT NULL";
+                }
+
+                $extras = get_item($item, "extras");
+                if ($extras) {
+                    $sql .= " $extras";
                 }
             }
         }
@@ -140,6 +146,24 @@ class Model
     public static function query() {
         return new Query(get_called_class());
     }
+
+    public static function get_sql_type($type, $max_length=null) {
+        switch (strtolower($type)) {
+            case 'integer':
+                if (!$max_length)
+                    $max_length = 11;
+                return "INT($max_length)";
+            case 'string':
+                if (!$max_length)
+                    $max_length = 30;
+                return "VARCHAR($max_length)";
+            case 'boolean':
+                return "BOOL";
+            default:
+                return null;
+        }
+    }
+
 }
 
 ?>
