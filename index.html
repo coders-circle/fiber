@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Fiber by coders-circle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Fiber</h1>
+      <h2 class="project-tagline">A simple and light, yet powerful MVC framework in PHP</h2>
+      <a href="https://github.com/coders-circle/fiber" class="btn">View on GitHub</a>
+      <a href="https://github.com/coders-circle/fiber/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/coders-circle/fiber/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="fiber" class="anchor" href="#fiber" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>fiber</h1>
+
+<p><strong>fiber</strong> is a simple, lightweight php framework based on MVC pattern. <em>fiber</em> is built for helping development of php projects, when heavy frameworks are not desired.</p>
+
+<h2>
+<a id="user-guide" class="anchor" href="#user-guide" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>User Guide</h2>
+
+<h3>
+<a id="router" class="anchor" href="#router" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Router</h3>
+
+<p>All routes are defined as rules in the <code>Router</code> class inside the <em>classes/Router.php</em> file. A rule defines the controller or the template that handles a path.</p>
+
+<p>Each rule is of the form:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">// type can be 'controller' or 'template'</span></span>
+<span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>path<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-c1">type</span>, <span class="pl-c1">controller_or_template_name</span>)</span></pre></div>
+
+<p>An example of a set of rules is:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">routing_rules</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-c">// Default rule</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>fiber<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c">// Template redirection rules</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>fiber<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>template<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>fiber.html<span class="pl-pds">"</span></span>),</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-c">// Controller redirection rules</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>controller<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ExampleController<span class="pl-pds">'</span></span>),</span>
+<span class="pl-s1">);</span></pre></div>
+
+<p>Here the path <code>/fiber/</code> is routed to the template file <em>views/fiber.html</em> and the path <code>/example/</code> is handled by the controller <code>ExampleController</code> in the file <em>controls/ExampleController.php</em>. The default rule, for when no path is
+provided in the url, is the "fiber" template rule.</p>
+
+<p>Templates are just HTML pages that may include some template tags for server side processing. For simple pages that has no need to access database or perform any complicated processing, one can simply route the url directly to a template.</p>
+
+<p>Controllers perform some processing, optionally accessing the database, and pass the processed data to a corresponding view. The view is then responsible for presenting text or HTML output to the user. A view is mostly built from a template.</p>
+
+<h3>
+<a id="controllers-and-views" class="anchor" href="#controllers-and-views" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Controllers and Views</h3>
+
+<p>Every controller is held in a class derived from the <code>Controller</code> base class and is stored inside the <em>controls</em> directory. A controller returns a <code>View</code> object which acts as a renderer, that returns what is to be presented to the user.</p>
+
+<p>A view can be constructed directly from some text that you want to present or can be constructed from a template, which defines the HTML page to be presented. When creating from template, you can pass data to the view, which data you can
+use in the template. The <code>TemplateView</code> processes template which includes replacing the data passed from the controller and
+returns the final result.</p>
+
+<p>An example controller is:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">class</span> <span class="pl-en">ExampleController</span> <span class="pl-k">extends</span> <span class="pl-e">Controller</span></span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">get</span>()</span>
+<span class="pl-s1">    {</span>
+<span class="pl-s1">        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-c1">TemplateView</span>(<span class="pl-s"><span class="pl-pds">'</span>example.html<span class="pl-pds">'</span></span>);</span>
+<span class="pl-s1">        <span class="pl-c">// return new TemplateView('example.html', array("my_data"=&gt;"my_value"));</span></span>
+<span class="pl-s1">        <span class="pl-c">// return new View("Some text that is displayed as it is");</span></span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1">}</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span></pre></div>
+
+<p>A controller class can have different methods that are called by the framework to handle different url requests.</p>
+
+<ul>
+<li>
+<code>get()</code> : handles GET requests</li>
+<li>
+<code>post()</code> : handles POST requests</li>
+<li>in general <em><code>method()</code></em> handles HTTP request of type <em>method</em>
+</li>
+<li>
+<code>get_foo()</code> : handles GET requests for urls of form <em>&lt;controller&gt;/foo/</em>
+</li>
+<li>
+<code>get_foo($x, $y)</code> : handles GET requests for urls of form <em>&lt;controller&gt;/foo/x/y/</em> where <code>x</code> and <code>y</code> are again passed as parameters to the method</li>
+<li>
+<code>post_foo()</code> : similar to <code>get_foo()</code> but handles POST requests</li>
+<li>...</li>
+</ul>
+
+<h3>
+<a id="templates" class="anchor" href="#templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Templates</h3>
+
+<p>Templates are basic text pages, mostly HTML documents, that can be used as views or can be directly displayed by routing a path to it.</p>
+
+<p>TODO Template tags</p>
+
+<h3>
+<a id="models" class="anchor" href="#models" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Models</h3>
+
+<p>Each database table can be accessed with a simple <code>Model</code>, where the schema is defined using array of properties. Each property is an array defining the name of the field, its type and other attributes like max_length.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">require_once</span> <span class="pl-s"><span class="pl-pds">"</span>../classes/Model.php<span class="pl-pds">"</span></span>;</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-k">class</span> <span class="pl-en">Example</span> <span class="pl-k">extends</span> <span class="pl-e">Model</span></span>
+<span class="pl-s1">{</span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-k">function</span> <span class="pl-en">get_schema</span>() {</span>
+<span class="pl-s1">        <span class="pl-c">// schema is array of properties</span></span>
+<span class="pl-s1">        <span class="pl-c">// each property being the tuple: (field-name, type, [attribute,...])</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1">        <span class="pl-k">return</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">            <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>example_data<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>max_length<span class="pl-pds">"</span></span><span class="pl-k">=&gt;</span><span class="pl-c1">12</span>),</span>
+<span class="pl-s1">            <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>example_data2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>string<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>extra<span class="pl-pds">"</span></span><span class="pl-k">=&gt;</span><span class="pl-s"><span class="pl-pds">"</span>UNIQUE<span class="pl-pds">"</span></span>),</span>
+<span class="pl-s1">            <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>example_data3<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>integer<span class="pl-pds">"</span></span>)</span>
+<span class="pl-s1">            <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>example_data4<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>datetime<span class="pl-pds">"</span></span>)</span>
+<span class="pl-s1">        );</span>
+<span class="pl-s1">    }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1">    <span class="pl-k">public</span> <span class="pl-smi">$example_data3</span> <span class="pl-k">=</span> <span class="pl-c1">15</span>; <span class="pl-c">// default value</span></span>
+<span class="pl-s1">}</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span><span class="pl-pse"><span class="pl-s1">?</span>&gt;</span></pre></div>
+
+<p>New data can be saved in a table, by calling the <code>save()</code> in an instance.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$test</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">Example</span>();</span>
+<span class="pl-s1"><span class="pl-smi">$test</span><span class="pl-k">-&gt;</span><span class="pl-smi">example_data</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>hello<span class="pl-pds">"</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$test</span><span class="pl-k">-&gt;</span><span class="pl-smi">example_data2</span> <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>world<span class="pl-pds">"</span></span>;</span>
+<span class="pl-s1"><span class="pl-smi">$test</span><span class="pl-k">-&gt;</span><span class="pl-smi">example_data4</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-c1">DateTime</span>();</span>
+<span class="pl-s1"><span class="pl-smi">$test</span><span class="pl-k">-&gt;</span>save();</span></pre></div>
+
+<p>One can easily query objects with raw sql queries or using the built-in query builder.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">// Get all users</span></span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>get_all();</span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>query()<span class="pl-k">-&gt;</span>get();</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Raw query</span></span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>raw_query(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-s1"><span class="pl-k">SELECT</span> <span class="pl-k">*</span> <span class="pl-k">FROM</span> user <span class="pl-k">WHERE</span> first_name<span class="pl-k">=</span><span class="pl-s">'Bibek'</span> <span class="pl-k">AND</span> last_name<span class="pl-k">=</span><span class="pl-s">'Dahal'</span></span><span class="pl-pds">"</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Query-Builder: Filter users (unsafe)</span></span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>query()<span class="pl-k">-&gt;</span>where(<span class="pl-s"><span class="pl-pds">"</span>first_name='Bibek' AND last_name='Dahal'<span class="pl-pds">"</span></span>)<span class="pl-k">-&gt;</span>get();</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Query-Builder: Filter users (safe)</span></span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>query()<span class="pl-k">-&gt;</span>where(<span class="pl-s"><span class="pl-pds">"</span>first_name=? AND last_name=?<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Bibek<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Dahal<span class="pl-pds">"</span></span>)<span class="pl-k">-&gt;</span>get();</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Query-Builder: Filter and project only the last name</span></span>
+<span class="pl-s1"><span class="pl-smi">$users</span> <span class="pl-k">=</span> <span class="pl-c1">User</span><span class="pl-k">::</span>query()<span class="pl-k">-&gt;</span>where(<span class="pl-s"><span class="pl-pds">"</span>first_name=?<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Bibek<span class="pl-pds">"</span></span>)<span class="pl-k">-&gt;</span>select(<span class="pl-s"><span class="pl-pds">"</span>last_name<span class="pl-pds">"</span></span>)<span class="pl-k">-&gt;</span>get();</span></pre></div>
+
+<h3>
+<a id="migrations" class="anchor" href="#migrations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Migrations</h3>
+
+<p>Every time, you create a model and define its schema, and every time you change schema of any model, you should <em>migrate</em> the changes for them to be reflected in your database.</p>
+
+<p>Each migration is defined by the sql statements that perform the required changes to the database. The migration is stored in a file <em>&lt;table_name&gt;_&lt;version&gt;.sql</em> inside the <em>migrations</em> directory. The version of each schema is kept tracked by a special table <em>schema_versions</em> in the database. This way, any new migration can be detected and applied whenever required. Note that you do not need to create these migration files yourself, though you can if you need to.</p>
+
+<p>Two utilities <code>makemigration</code> and <code>migrate</code>, which are basically php scripts, are available for migration purposes. The <code>makemigration</code> command automatically detects any new changes in the schema definition and generates a migration file with naming convention mentioned above. The <code>migrate</code> command then apply any new migrations present for a model, effectively changing the database.</p>
+
+<div class="highlight highlight-source-shell"><pre>php makemigration MyModel
+php migrate MyModel</pre></div>
+
+<h3>
+<a id="authentication-and-session" class="anchor" href="#authentication-and-session" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authentication and Session</h3>
+
+<p><em>fiber</em> provides some utility functions for basic session and authentication handling.</p>
+
+<p><code>Session</code> class provides static functions for simple session data handling.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c1">Session</span><span class="pl-k">::</span>store(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>);</span>
+<span class="pl-s1"><span class="pl-c1">Session</span><span class="pl-k">::</span>remove(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>);</span>
+<span class="pl-s1"><span class="pl-smi">$value</span> <span class="pl-k">=</span> <span class="pl-c1">Session</span><span class="pl-k">::</span>get(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>);</span>
+<span class="pl-s1"><span class="pl-c1">Session</span><span class="pl-k">::</span>reset();</span>
+<span class="pl-s1"><span class="pl-c1">Session</span><span class="pl-k">::</span>destroy();</span></pre></div>
+
+<p><code>Auth</code> class provides authentication related functions, again all static, and uses the <code>Session</code> class for remembering logged-in users across pages. For this, it stores the user's id in the session variable <em>user</em>.</p>
+
+<p>To work with these functions, you must have some <code>User</code> model class, which extends from <code>Model</code> and has <code>id : integer</code> and <code>password : string(max_length &gt;= 255)</code> fields. Note that the password field stores a hash value concatenated with other info including salt and hashing method used, as returned by the php <code>password_hash()</code> method.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">// Assuming you have a User model class with id and password fields</span></span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Set password field of the user object, automatically performing the hashing</span></span>
+<span class="pl-s1"><span class="pl-c1">Auth</span><span class="pl-k">::</span>set_password(<span class="pl-smi">$user</span>, <span class="pl-smi">$password</span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Verify password for the user object, checking for valid hash</span></span>
+<span class="pl-s1"><span class="pl-k">if</span> (<span class="pl-c1">Auth</span><span class="pl-k">::</span>verify_user(<span class="pl-smi">$user</span>, <span class="pl-smi">$password</span>)) { <span class="pl-c">/*...*/</span> }</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Login with the user object for the current session</span></span>
+<span class="pl-s1"><span class="pl-c1">Auth</span><span class="pl-k">::</span>login(<span class="pl-smi">$user</span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Logout from the current session</span></span>
+<span class="pl-s1"><span class="pl-c1">Auth</span><span class="pl-k">::</span>logout();</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Get currently logged-in user object, null if no-one is logged in</span></span>
+<span class="pl-s1"><span class="pl-c">// Note that the 'User' is your custom model class name</span></span>
+<span class="pl-s1"><span class="pl-smi">$user</span> <span class="pl-k">=</span> <span class="pl-c1">Auth</span><span class="pl-k">::</span>get_user(<span class="pl-s"><span class="pl-pds">"</span>User<span class="pl-pds">"</span></span>);</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"><span class="pl-c">// Verify password for the user object and login when verified</span></span>
+<span class="pl-s1"><span class="pl-k">if</span> (<span class="pl-c1">Auth</span><span class="pl-k">::</span>authenticate(<span class="pl-smi">$user</span>, <span class="pl-smi">$password</span>)) { <span class="pl-c">/*...*/</span> }</span></pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/coders-circle/fiber">Fiber</a> is maintained by <a href="https://github.com/coders-circle">coders-circle</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
