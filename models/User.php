@@ -7,7 +7,13 @@ class User extends Model {
         return array(
             array("username", "string", "extra"=>"UNIQUE"),
             array("password", "string", "max_length"=>255),
+            array("created_at", "datetime")
         );
+    }
+
+    public function presave() {
+        if (!isset($this->created_at))
+            $this->created_at = new DateTime();
     }
 }
 

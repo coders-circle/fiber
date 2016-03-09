@@ -97,6 +97,7 @@ class Example extends Model
             array("example_data", "string", "max_length"=>12),
             array("example_data2", "string", "extra"=>"UNIQUE"),
             array("example_data3", "integer")
+            array("example_data4", "datetime")
         );
     }
 
@@ -112,6 +113,7 @@ New data can be saved in a table, by calling the `save()` in an instance.
 $test = new Example();
 $test->example_data = "hello";
 $test->example_data2 = "world";
+$test->example_data4 = new DateTime();
 $test->save();
 ```
 

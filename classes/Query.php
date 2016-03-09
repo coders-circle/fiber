@@ -22,14 +22,20 @@ class Query
             return $this;
 
         for($i=1; $i<count($args); ++$i) {
-            $type = gettype($args[$i]);
+            $arg = $args[$i];
+            $type = gettype($arg);
             if ($type == "string") {
                 $this->ptypes .= 's';
+                $this->params[] = $arg;
+            }
+            else if ($arg instanceof DateTime) {
+                $this->ptypes .= 's';
+                $this->params[] = $arg->format("Y-m-d H:i:s");
             }
             else {
                 $this->ptypes .= 'd';
+                $this->params[] = $arg;
             }
-            $this->params[] = $args[$i];
         }
 
         $this->selection = $args[0];

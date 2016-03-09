@@ -32,8 +32,7 @@ class Model
         if ($schema) {
             foreach ($schema as $item) {
                 $name = $item[0];
-                $len = get_item($item, "max_length");
-                $type = self::get_sql_type($item[1], $len);
+                $type = self::get_sql_type($item);
 
                 if ($type && $name) {
                     $sql .= ", `$name` $type NOT NULL";
@@ -56,23 +55,29 @@ class Model
         $schema = $this->get_schema();
         if ($schema) {
             $fields = array('id');
+            $types = array('id'=>'integer');
             foreach ($schema as $item) {
                 $fields[] = $item[0];
+                $types[$item[0]] = $item[1];
             }
-            return $fields;
+            return array($fields, $types);
         }
-        return null;
+        return array(null, null);
     }
 
+    public function presave() {}
+    public function postsave() {}
+
     public function save() {
+        $this->presave();
         $keys = "";
         $values = "";
         $update_string = "";
 
         $reflect = new ReflectionObject($this);
         $props = $reflect->getProperties(ReflectionProperty::IS_PUBLIC);
-        $fields = $this->get_schema_fields();
-        if (!$fields)
+        list($fields, $types) = $this->get_schema_fields();
+        if (!$fields || !$types)
             return;
 
         $db = Database::get_instance();
@@ -82,7 +87,16 @@ class Model
             if (!in_array($name, $fields))
                 continue;
 
-            $val = $db->real_escape_string($prop->getValue($this));
+            $val = $prop->getValue($this);
+
+            if ($types[$name] == "datetime") {
+                $time = $val->format("Y-m-d H:i:s");
+                $val = "'$time'";
+            }
+            else {
+                $val = $db->real_escape_string($val);
+                $val = "'$val'";
+            }
 
             if ($keys!="")
                 $keys .= ",";
@@ -90,11 +104,11 @@ class Model
 
             if ($values!="")
                 $values .= ",";
-            $values .= "'$val'";
+            $values .= "$val";
 
             if ($update_string!="")
                 $update_string .= ",";
-            $update_string .= "$name='$val'";
+            $update_string .= "$name=$val";
         }
 
         $sql = "INSERT INTO " . $this->get_table_name() .
@@ -102,21 +116,29 @@ class Model
             " ON DUPLICATE KEY UPDATE $update_string";
 
         $db->query_with_error($sql);
+        $this->postsave();
     }
 
     public static function get_from_query_result($result) {
         $objects = array();
         if ($result->num_rows > 0) {
+            $i = 0;
             while ($row = $result->fetch_assoc()) {
+                $field_info = $result->fetch_field_direct($i++);
+
                 $class = get_called_class();
                 $obj = new $class();
+                list($fields, $types) = $obj->get_schema_fields();
 
                 foreach ($obj as $key=>$val) {
                     unset($obj->$key);
                 }
 
                 foreach ($row as $key=>$val) {
-                    $obj->$key = $val;
+                    if ($types[$key] == "datetime")
+                        $obj->$key = new DateTime($val);
+                    else
+                        $obj->$key = $val;
                 }
 
                 $objects[] = $obj;
@@ -147,23 +169,38 @@ class Model
         return new Query(get_called_class());
     }
 
-    public static function get_sql_type($type, $max_length=null) {
+    public static function get_sql_type($item) {
+        $type = $item[1];
+        $max_length = get_item($item, "max_length");
+
+        $result = "";
         switch (strtolower($type)) {
             case 'integer':
                 if (!$max_length)
                     $max_length = 11;
-                return "INT($max_length)";
+                $result = "INT($max_length)";
+                break;
             case 'string':
                 if (!$max_length)
                     $max_length = 30;
-                return "VARCHAR($max_length)";
+                $result = "VARCHAR($max_length)";
+                break;
+            case 'datetime':
+                $result = "DATETIME";
+                break;
             case 'boolean':
-                return "BOOL";
+                $result = "BOOL";
+                break;
             default:
                 return null;
         }
-    }
 
+        $default = get_item($item, "default");
+        if ($default) {
+            $result .= " DEFAULT $default";
+        }
+        return $result;
+    }
 }
 
 ?>

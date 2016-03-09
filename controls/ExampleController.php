@@ -36,8 +36,10 @@ class ExampleController extends Controller
         }
         else {
             $user = Auth::get_user("User");
-            if ($user)
+            if ($user) {
                 $data["message"] = "Hello " . $user->username . " !";
+                $data["message"] .= "\n". $user->created_at->format("r");
+            }
         }
 
         return new TemplateView('example.html', $data);
