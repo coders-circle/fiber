@@ -10,7 +10,7 @@ spl_autoload_register('autoLoadClass');
 function autoLoadClass($classname)
 {
     if (preg_match('/[a-zA-Z]+Controller$/', $classname)) {
-        $file = '../controls/' . $classname . '.php';
+        $file = __DIR__.'/../controllers/' . $classname . '.php';
         if (!file_exists($file)) {
             throw new Exception404("Couldn't load file <b>controls/" . $classname . ".php</b>");
         }

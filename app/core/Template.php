@@ -1,6 +1,6 @@
 <?php
 
-require_once '../config.php';
+require_once 'config.php';
 
 class Template
 {
@@ -13,7 +13,7 @@ class Template
 
     private function include_to($content, $match, $template_file_name)
     {
-        $include_content = file_get_contents(ROOTDIR.'/views/'.$template_file_name);
+        $include_content = file_get_contents(ROOTDIR.'/app/views/'.$template_file_name);
         return str_replace($match, $include_content, $content);
     }
 
@@ -36,7 +36,7 @@ class Template
 
     public function process($data)
     {
-        $content = file_get_contents(ROOTDIR.'/views/'.$this->file);
+        $content = file_get_contents(ROOTDIR.'/app/views/'.$this->file);
 
         // regular expression for {% action bla-bla %} format
         $action_regx = "[{%(.*)%}]";

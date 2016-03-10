@@ -1,5 +1,4 @@
 <?php
-require_once 'RouterBase.php';
 
 class Router extends RouterBase
 {

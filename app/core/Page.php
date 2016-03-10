@@ -1,6 +1,6 @@
 <?php
 
-require_once 'TemplateView.php';
+require_once 'views/TemplateView.php';
 require_once 'Controller.php';
 require_once 'utils.php';
 

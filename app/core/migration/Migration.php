@@ -1,6 +1,7 @@
 <?php
 
 require_once 'SchemaVersions.php';
+require_once 'config.php';
 
 class Migration {
 
@@ -36,7 +37,7 @@ class Migration {
 
     public static function get_migration_version($table_name) {
         $max_version = 0;
-        foreach(glob("../migrations/" . $table_name . "_*.sql") as $file) {
+        foreach(glob(ROOTDIR."/migrations/" . $table_name . "_*.sql") as $file) {
             $filename = basename($file, '.sql');
             $pattern = "/^" . $table_name . "_(?P<version>\d+)$/";
             if (preg_match($pattern, $filename, $matches)) {
@@ -48,7 +49,7 @@ class Migration {
     }
 
     public static function get_migration($table_name, $version) {
-        $filename = "../migrations/" . $table_name . "_" . $version . ".sql";
+        $filename = ROOTDIR."/migrations/" . $table_name . "_" . $version . ".sql";
         @$sql = file_get_contents($filename);
         return $sql;
     }

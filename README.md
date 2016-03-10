@@ -30,7 +30,7 @@ $this->routing_rules = array(
 );
 ```
 
-Here the path `/fiber/` is routed to the template file *views/fiber.html* and the path `/example/` is handled by the controller `ExampleController` in the file *controls/ExampleController.php*. The default rule, for when no path is
+Here the path `/fiber/` is routed to the template file *views/fiber.html* and the path `/example/` is handled by the controller `ExampleController` in the file *controllers/ExampleController.php*. The default rule, for when no path is
 provided in the url, is the "fiber" template rule.
 
 Templates are just HTML pages that may include some template tags for server side processing. For simple pages that has no need to access database or perform any complicated processing, one can simply route the url directly to a template.
@@ -39,7 +39,7 @@ Controllers perform some processing, optionally accessing the database, and pass
 
 ### Controllers and Views
 
-Every controller is held in a class derived from the `Controller` base class and is stored inside the *controls* directory. A controller returns a `View` object which acts as a renderer, that returns what is to be presented to the user.
+Every controller is held in a class derived from the `Controller` base class and is stored inside the *controllers* directory. A controller returns a `View` object which acts as a renderer, that returns what is to be presented to the user.
 
 A view can be constructed directly from some text that you want to present or can be constructed from a template, which defines the HTML page to be presented. When creating from template, you can pass data to the view, which data you can
 use in the template. The `TemplateView` processes template which includes replacing the data passed from the controller and
@@ -85,7 +85,6 @@ Each database table can be accessed with a simple `Model`, where the schema is d
 
 ```php
 <?php
-require_once "../classes/Model.php";
 
 class Example extends Model
 {

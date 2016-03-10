@@ -1,10 +1,9 @@
 #!/usr/bin/php
 <?php
 
-// Act as if we are working from the models directory
-chdir("models");
 
-require_once '../classes/Migration.php';
+set_include_path(__DIR__);
+require_once 'app/core/migration/Migration.php';
 
 // Get the model
 if (count($argv)==1) {

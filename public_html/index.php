@@ -1,5 +1,8 @@
 <?php
-require_once '../classes/Router.php';
+set_include_path("../");
+
+require_once 'app/core/RouterBase.php';
+require_once 'app/Router.php';
 
 try {
     $router = new Router();

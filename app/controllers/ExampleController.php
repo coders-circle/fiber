@@ -1,7 +1,7 @@
 <?php
 
-require_once "../classes/Auth.php";
-require_once "../models/User.php";
+require_once "app/core/session/Auth.php";
+require_once "app/models/User.php";
 
 class ExampleController extends Controller
 {

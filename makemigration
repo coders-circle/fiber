@@ -1,11 +1,10 @@
 #!/usr/bin/php
 <?php
 
-// Act as if we are working from the models directory
-chdir("models");
+set_include_path(__DIR__);
 
-require_once '../classes/Migration.php';
-require_once '../libs/dbStruct.php';
+require_once 'app/core/migration/Migration.php';
+require_once 'libs/dbStruct.php';
 
 $db = Database::get_instance();
 
@@ -16,7 +15,9 @@ if (count($argv)==1) {
 }
 $model = $argv[1];
 // TODO: Check if valid model
-require_once "$model.php";
+require_once "app/models/$model.php";
+
+$model = basename($model);
 $obj = new $model();
 
 $final_sql = "";
@@ -61,7 +62,10 @@ if (trim($final_sql) == '') {
     echo "$final_sql\n";
     echo "Saving to ... $output_file\n";
 
-    file_put_contents("../$output_file", $final_sql);
+    if (!is_dir(ROOTDIR."/migrations")) {
+        mkdir(ROOTDIR."/migrations");
+    }
+    file_put_contents(ROOTDIR."/$output_file", $final_sql);
     echo "Done !\n";
 }
  ?>

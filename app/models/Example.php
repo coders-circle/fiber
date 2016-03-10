@@ -1,5 +1,4 @@
 <?php
-require_once "../classes/Model.php";
 
 class Example extends Model
 {

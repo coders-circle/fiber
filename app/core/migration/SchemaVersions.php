@@ -1,5 +1,5 @@
 <?php
-require_once "Model.php";
+require_once "app/core/Model.php";
 
 class SchemaVersions extends Model
 {

@@ -27,6 +27,7 @@ class Model
         $sql .= " $primary_key INT(11) NOT NULL AUTO_INCREMENT";
 
         $schema = $this->get_schema();
+        $suffix = "";
 
         // Use schema to deduce field names and types.
         if ($schema) {
@@ -42,10 +43,15 @@ class Model
                 if ($extra) {
                     $sql .= " $extra";
                 }
+
+                $unique = get_item($item, "unique");
+                if ($unique) {
+                    $suffix .= ", UNIQUE KEY `$name` (`$name`)";
+                }
             }
         }
 
-        $sql .= ", PRIMARY KEY (`id`) )";
+        $sql .= ", PRIMARY KEY (`id`)$suffix)";
 
         return $sql;
         # Database::get_instance()->query_with_error($sql);

@@ -1,6 +1,6 @@
 <?php
 
-require_once "View.php";
+require_once "app/core/View.php";
 
 class TemplateView extends View {
 
