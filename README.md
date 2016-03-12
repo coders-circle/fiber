@@ -6,32 +6,33 @@
 
 ### Router
 
-All routes are defined as rules in the `Router` class inside the *classes/Router.php* file. A rule defines the controller or the template that handles a path.
+All routes are defined as rules in the `Router` class inside the *classes/Router.php* file. A rule defines the controller or the template that handles a path. The path is specified
+as regex string. Note that the initial and final slashes are not required in the regex string.
 
 Each rule is of the form:
 
 ```php
 // type can be 'controller' or 'template'
-'path' => array(type, controller_or_template_name)
+'regex_for_the_path' => array(type, controller_or_template_name)
 ```
 
 An example of a set of rules is:
 
 ```php
 $this->routing_rules = array(
-    // Default rule
-    "default" => "fiber",
+    "^$" => array("template", "fiber.html"),
 
-    // Template redirection rules
-    "fiber" => array("template", "fiber.html"),
+    "^example$"
+        => array('controller', 'ExampleController'),
 
-    // Controller redirection rules
-    "example" => array('controller', 'ExampleController'),
+    "^example/create_user/(?<username>\w+)/(?<password>\w+)$"
+        => array('controller', 'ExampleController:create_user'),
+
+
 );
 ```
 
-Here the path `/fiber/` is routed to the template file *views/fiber.html* and the path `/example/` is handled by the controller `ExampleController` in the file *controllers/ExampleController.php*. The default rule, for when no path is
-provided in the url, is the "fiber" template rule.
+Here the empty path `/` is routed to the template file *views/fiber.html* and the path `/example/` is handled by the method `ExampleController::get()` defined in the class file *controllers/ExampleController.php*. Similarly the path `/example/create_user/username/password` is handled by the method `ExampleController::get_create_user($username, $password)` again defined in the class file *controllers/ExampleController.php*.
 
 Templates are just HTML pages that may include some template tags for server side processing. For simple pages that has no need to access database or perform any complicated processing, one can simply route the url directly to a template.
 
@@ -68,8 +69,8 @@ A controller class can have different methods that are called by the framework t
 * `get()` : handles GET requests
 * `post()` : handles POST requests
 * in general *`method()`* handles HTTP request of type *method*
-* `get_foo()` : handles GET requests for urls of form *&lt;controller&gt;/foo/*
-* `get_foo($x, $y)` : handles GET requests for urls of form *&lt;controller&gt;/foo/x/y/* where `x` and `y` are again passed as parameters to the method
+* `get_foo()` : handles GET requests for routing rule *controller:foo*
+* `get_foo($x, $y)` : handles GET requests for routing rule *controller:foo* where the arguments are taken from the regex sub-group matches
 * `post_foo()` : similar to `get_foo()` but handles POST requests
 * ...
 

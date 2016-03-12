@@ -4,42 +4,25 @@ session_start();
 
 require_once 'Page.php';
 
-// Autoload controller classes
-spl_autoload_register('autoLoadClass');
-
-function autoLoadClass($classname)
-{
-    if (preg_match('/[a-zA-Z]+Controller$/', $classname)) {
-        $file = __DIR__.'/../controllers/' . $classname . '.php';
-        if (!file_exists($file)) {
-            throw new Exception404("Couldn't load file <b>controls/" . $classname . ".php</b>");
-        }
-
-        include $file;
-        return true;
-    }
-    return false;
-}
-
-
 class RouterBase
 {
     protected $routing_rules = array();
 
-    private function get_args($php_self, $request_uri)
+    private function get_path($php_self, $request_uri)
     {
     	$basepath = implode('/', array_slice(explode('/', $php_self), 0, -1)) . '/';
     	$uri = substr($request_uri, strlen($basepath));
-    	if (strstr($uri, '?')) $uri = substr($uri, 0, strpos($uri, '?'));
-    	$uri = '/' . trim($uri, '/');
+    	if (strstr($uri, '?'))
+            $uri = substr($uri, 0, strpos($uri, '?'));
+    	$uri = trim($uri, '/');
     	return $uri;
     }
 
     public function route($php_self, $request_uri, $method)
     {
-        $args = $this->get_args($php_self, $request_uri);
+        $path = $this->get_path($php_self, $request_uri);
         $routes = array();
-        $temp = explode('/', $args);
+        $temp = explode('/', $path);
         foreach($temp as $route)
         {
         	if(trim($route) != "")
@@ -50,47 +33,69 @@ class RouterBase
         $page->set_method($method);
 
         try {
-            if(count($routes) > 0)
-            {
-                $controller = null;
-                if (key_exists($routes[0], $this->routing_rules))
-                {
-                    $rule = $this->routing_rules[$routes[0]];
+            $controller = null;
+
+            // find rule matching the path
+            foreach ($this->routing_rules as $pattern => $rule) {
+                $new_pattern = str_replace("/", "\/", $pattern);
+                $new_pattern = "/$new_pattern/";
+                if (preg_match($new_pattern, $path, $matches)) {
 
                     if ($rule[0] == "template") {
                         $page->set_template($rule[1]);
                     }
                     else if ($rule[0] == "controller") {
-                        $controller = new $rule[1]();
-                    }
-                }
-                else {
-                    throw new Exception404();
-                }
+                        $controller_info = explode(":", $rule[1]);
+                        $this->load_controller($controller_info[0]);
+                        $controller = new $controller_info[0]();
+                        $page->set_controller($controller);
 
-                if ($controller) {
-                    $page->set_controller($controller);
-                    if (count($routes) > 1)
-                    {
-                        if (count($routes) > 2)
-                            $page->set_arguments(array_slice($routes, 2));
-                        $page->set_method_name($routes[1]);
+                        if (count($controller_info) > 1) {
+                            $page->set_method_name($controller_info[1]);
+                        }
+
+                        if (count($matches) > 1) {
+                            $arguments = array();
+                            $i = 1;
+                            while (array_key_exists($i, $matches)) {
+                                $arguments[] = $matches[$i];
+                                $i++;
+                            }
+                            $page->set_arguments($arguments);
+                        }
                     }
+                    $page->generate();
+                    return;
                 }
             }
-            else
-            {
-                if (key_exists("default", $this->routing_rules))
-                    header("Location: " .get_url($this->routing_rules["default"]));
-                exit();
-            }
-            $page->generate();
+            throw new Exception404("No rule for path <b>$path</b> is defined");
         }
         catch (Exception404 $e) {
-            $page->set_controller(null);
-            $page->set_template('404.html');
-            $page->generate();
+            if (DEBUG) {
+                echo "<h1>404 Page Not Found</h1>";
+                echo "<div class='container'>";
+                echo "<p>Error message: <br>";
+                echo $e->getMessage()."</p>";
+                echo "</div>";
+                echo "<p> You are seeing this message because <b>DEBUG</b> is";
+                echo " enabled in your <b>config.php</b>. Set it to";
+                echo " <i>false</i> to see standard 404 page.</p>";
+            }
+            else {
+                $page->set_controller(null);
+                $page->set_template('404.html');
+                $page->generate();
+            }
         }
+    }
+
+
+    private function load_controller($classname) {
+        $file = 'app/controllers/' . $classname . '.php';
+        if (!file_exists(ROOTDIR."/".$file)) {
+            throw new Exception404("Couldn't load file <b>" . $file . "</b>");
+        }
+        include_once ROOTDIR."/".$file;
     }
 }
 

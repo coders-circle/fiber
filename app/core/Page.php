@@ -46,19 +46,30 @@ class Page
 
     public function generate()
     {
-        if( $this->controller )
+        if($this->controller)
         {
 
-            if (! $this->method )
+            if (!$this->method)
                 $this->method = "get";
-
             $action = $this->method;
-            if ( $this->method_name )
+            if ($this->method_name)
                 $action = $action . "_" . $this->method_name;
 
-            if (!method_exists($this->controller, $action))
-                throw new Exception404("Method <b>$action</b> doesn't exists in controller <b>"
-                    . get_class($this->controller) . "</b>");
+            if (!method_exists($this->controller, $action)) {
+                if ($this->method != "get") {
+
+                    $this->method = "get";
+                    $action = $this->method;
+                    if ($this->method_name)
+                        $action = $action . "_" . $this->method_name;
+                }
+
+                if (!method_exists($this->controller, $action)) {
+                    throw new Exception404("No method <b>$action</b>" .
+                        " exists in controller <b>" .
+                        get_class($this->controller) . "</b>");
+                }
+            }
 
             if (! $this->arguments )
                 $this->view = $this->controller->$action();
@@ -66,9 +77,10 @@ class Page
                 $this->view = call_user_func_array(array($this->controller, $action), $this->arguments);
             }
         }
-        else if (! $this->view )
+        else if (!$this->view)
         {
             $this->set_template('fiber.html');
+            // TODO Actually throw exception here
         }
         $this->view->render();
     }

@@ -10,6 +10,8 @@ define("DATABASE",  "fiber-db");
 
 define("ROOTDIR", __DIR__);
 
+define("DEBUG", true);
+
 // function to get url from route
 function get_url($route)
 {

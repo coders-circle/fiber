@@ -4,17 +4,20 @@ class Router extends RouterBase
 {
     public function __construct()
     {
-
         $this->routing_rules = array(
-            // Default rule
-            "default" => "fiber",
+            "^$" => array("template", "fiber.html"),
 
-            // Template redirection rules
-            "fiber" => array("template", "fiber.html"),
+            "^example$"
+                => array('controller', 'ExampleController'),
 
-            // Controller redirection rules
-            // This one is optional as controller name matches the rule
-            "example" => array('controller', 'ExampleController'),
+            "^example/create_user/(?<username>\w+)/(?<password>\w+)$"
+                => array('controller', 'ExampleController:create_user'),
+
+            "^example/test(?:/(?<username>\w+)/(?<password>\w+))?$"
+                => array('controller', 'ExampleController:test'),
+
+            "^example/logout$"
+                => array('controller', 'ExampleController:logout'),
         );
     }
 }

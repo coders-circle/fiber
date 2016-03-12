@@ -27,7 +27,7 @@ class ExampleController extends Controller
         if ($username && $password) {
             $user = User::query()->where("username=?", $username)->first();
 
-            if (Auth::authenticate($user, $password)) {
+            if ($user && Auth::authenticate($user, $password)) {
                 $data["message"] = "Successful login. Hello $username !";
             }
             else {
@@ -48,7 +48,7 @@ class ExampleController extends Controller
     public function get()
     {
         $data = array(
-            "message" => "hello world!"
+            "message" => "Welcome to the land of awesomeness !"
         );
         return new TemplateView('example.html', $data);
     }
