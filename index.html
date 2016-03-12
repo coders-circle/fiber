@@ -30,28 +30,29 @@
 <h3>
 <a id="router" class="anchor" href="#router" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Router</h3>
 
-<p>All routes are defined as rules in the <code>Router</code> class inside the <em>classes/Router.php</em> file. A rule defines the controller or the template that handles a path.</p>
+<p>All routes are defined as rules in the <code>Router</code> class inside the <em>classes/Router.php</em> file. A rule defines the controller or the template that handles a path. The path is specified
+as regex string. Note that the initial and final slashes are not required in the regex string.</p>
 
 <p>Each rule is of the form:</p>
 
 <div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-c">// type can be 'controller' or 'template'</span></span>
-<span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>path<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-c1">type</span>, <span class="pl-c1">controller_or_template_name</span>)</span></pre></div>
+<span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>regex_for_the_path<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-c1">type</span>, <span class="pl-c1">controller_or_template_name</span>)</span></pre></div>
 
 <p>An example of a set of rules is:</p>
 
 <div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-smi">$this</span><span class="pl-k">-&gt;</span><span class="pl-smi">routing_rules</span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
-<span class="pl-s1">    <span class="pl-c">// Default rule</span></span>
-<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>default<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">"</span>fiber<span class="pl-pds">"</span></span>,</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>^$<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>template<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>fiber.html<span class="pl-pds">"</span></span>),</span>
 <span class="pl-s1"></span>
-<span class="pl-s1">    <span class="pl-c">// Template redirection rules</span></span>
-<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>fiber<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">"</span>template<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>fiber.html<span class="pl-pds">"</span></span>),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>^example$<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">        <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>controller<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ExampleController<span class="pl-pds">'</span></span>),</span>
 <span class="pl-s1"></span>
-<span class="pl-s1">    <span class="pl-c">// Controller redirection rules</span></span>
-<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>example<span class="pl-pds">"</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>controller<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ExampleController<span class="pl-pds">'</span></span>),</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">"</span>^example/create_user/(?&lt;username&gt;\w+)/(?&lt;password&gt;\w+)$<span class="pl-pds">"</span></span></span>
+<span class="pl-s1">        <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>controller<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>ExampleController:create_user<span class="pl-pds">'</span></span>),</span>
+<span class="pl-s1"></span>
+<span class="pl-s1"></span>
 <span class="pl-s1">);</span></pre></div>
 
-<p>Here the path <code>/fiber/</code> is routed to the template file <em>views/fiber.html</em> and the path <code>/example/</code> is handled by the controller <code>ExampleController</code> in the file <em>controls/ExampleController.php</em>. The default rule, for when no path is
-provided in the url, is the "fiber" template rule.</p>
+<p>Here the empty path <code>/</code> is routed to the template file <em>views/fiber.html</em> and the path <code>/example/</code> is handled by the method <code>ExampleController::get()</code> defined in the class file <em>controllers/ExampleController.php</em>. Similarly the path <code>/example/create_user/username/password</code> is handled by the method <code>ExampleController::get_create_user($username, $password)</code> again defined in the class file <em>controllers/ExampleController.php</em>.</p>
 
 <p>Templates are just HTML pages that may include some template tags for server side processing. For simple pages that has no need to access database or perform any complicated processing, one can simply route the url directly to a template.</p>
 
@@ -60,7 +61,7 @@ provided in the url, is the "fiber" template rule.</p>
 <h3>
 <a id="controllers-and-views" class="anchor" href="#controllers-and-views" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Controllers and Views</h3>
 
-<p>Every controller is held in a class derived from the <code>Controller</code> base class and is stored inside the <em>controls</em> directory. A controller returns a <code>View</code> object which acts as a renderer, that returns what is to be presented to the user.</p>
+<p>Every controller is held in a class derived from the <code>Controller</code> base class and is stored inside the <em>controllers</em> directory. A controller returns a <code>View</code> object which acts as a renderer, that returns what is to be presented to the user.</p>
 
 <p>A view can be constructed directly from some text that you want to present or can be constructed from a template, which defines the HTML page to be presented. When creating from template, you can pass data to the view, which data you can
 use in the template. The <code>TemplateView</code> processes template which includes replacing the data passed from the controller and
@@ -92,10 +93,10 @@ returns the final result.</p>
 <li>in general <em><code>method()</code></em> handles HTTP request of type <em>method</em>
 </li>
 <li>
-<code>get_foo()</code> : handles GET requests for urls of form <em>&lt;controller&gt;/foo/</em>
+<code>get_foo()</code> : handles GET requests for routing rule <em>controller:foo</em>
 </li>
 <li>
-<code>get_foo($x, $y)</code> : handles GET requests for urls of form <em>&lt;controller&gt;/foo/x/y/</em> where <code>x</code> and <code>y</code> are again passed as parameters to the method</li>
+<code>get_foo($x, $y)</code> : handles GET requests for routing rule <em>controller:foo</em> where the arguments are taken from the regex sub-group matches</li>
 <li>
 <code>post_foo()</code> : similar to <code>get_foo()</code> but handles POST requests</li>
 <li>...</li>
@@ -114,7 +115,6 @@ returns the final result.</p>
 <p>Each database table can be accessed with a simple <code>Model</code>, where the schema is defined using array of properties. Each property is an array defining the name of the field, its type and other attributes like max_length.</p>
 
 <div class="highlight highlight-text-html-php"><pre><span class="pl-pse">&lt;?php</span><span class="pl-s1"></span>
-<span class="pl-s1"><span class="pl-k">require_once</span> <span class="pl-s"><span class="pl-pds">"</span>../classes/Model.php<span class="pl-pds">"</span></span>;</span>
 <span class="pl-s1"></span>
 <span class="pl-s1"><span class="pl-k">class</span> <span class="pl-en">Example</span> <span class="pl-k">extends</span> <span class="pl-e">Model</span></span>
 <span class="pl-s1">{</span>
