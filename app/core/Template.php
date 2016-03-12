@@ -17,26 +17,11 @@ class Template
         return str_replace($match, $include_content, $content);
     }
 
-    // extend is a bit complex, so is left for later
-    private function extend_to($content, $match, $base_template_name)
-    {
-        $base = file_get_contents(ROOTDIR.'/views/'.$base_template_name);
-        //$block_regx = "[\{\%block (.*)\%\}(.*)\{\% endblock \%\}]";
-        $block_regx = "#{% *insert.(.*)%}#";
-        $blocks = array();
-        if(preg_match_all($block_regx, $base, $matches))
-        {
-            for($i=0; $i<count($matches[1]); $i++)
-            {
-                array_push($blocks, $matches[1][$i]);
-            }
-        }
-        var_dump($blocks);
-    }
-
     public function process($data)
     {
         $content = file_get_contents(ROOTDIR.'/app/views/'.$this->file);
+
+        // TODO: verbose, comments
 
         // regular expression for {% action bla-bla %} format
         $action_regx = "[{%(.*)%}]";
@@ -66,15 +51,49 @@ class Template
                         $content = $this->include_to($content, $matches[0][$i], $args[0]);
                         ++$num_actions;
                         break;
-                    // yet to be implemented
-                    // case "extends":
-                    //     $this->extend_to($content, $matches[0][$i], $args[0]);
-                    //     $content = str_replace($matches[0][$i], "", $content);
-                    //     break;
+
                     case "url":
                         $content = str_replace($matches[0][$i], get_url($args[0]), $content);
                         ++$num_actions;
                         break;
+
+                    // For each block
+                    case "foreach":
+                        $expression = str_replace("foreach ", "", $matches[1][$i]);
+                        $replacement = "<?php foreach ($expression) { ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
+                        ++$num_actions;
+                        break;
+
+                    // If block
+                    case "if":
+                        $expression = str_replace("if ", "", $matches[1][$i]);
+                        $replacement = "<?php if ($expression) { ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
+                        ++$num_actions;
+                        break;
+
+                    case "elseif":
+                        $expression = str_replace("elseif ", "", $matches[1][$i]);
+                        $replacement = "<?php } else if ($expression) { ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
+                        ++$num_actions;
+                        break;
+
+                    case "else":
+                        $replacement = "<?php } else { ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
+                        ++$num_actions;
+                        break;
+
+                    // end blocks
+                    case "endfor":
+                    case "endif":
+                        $replacement = "<?php } ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
+                        ++$num_actions;
+                        break;
+
                     default:
                         // maybe throw some error
                         $content = str_replace($matches[0][$i], "", $content);
@@ -89,14 +108,22 @@ class Template
         {
             for($i=0; $i < count($matches[0]); $i++ )
             {
-                $key = trim($matches[1][$i]);
-                $content = str_replace($matches[0][$i],
-                    array_key_exists($key, $data)? $data[$key] : "",
-                    $content);
+                $expression = trim($matches[1][$i]);
+                $content = str_replace($matches[0][$i], "<?= $expression ?>", $content);
             }
         }
-        return $content;
+
+
+        $content = "?>".$content."<?php;";
+        return run($content, $data);
     }
+}
+
+function run() {
+    ob_start();
+    extract(func_get_arg(1));
+    eval(func_get_arg(0));
+    return ob_get_clean();
 }
 
 ?>

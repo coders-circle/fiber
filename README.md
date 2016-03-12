@@ -78,7 +78,57 @@ A controller class can have different methods that are called by the framework t
 
 Templates are basic text pages, mostly HTML documents, that can be used as views or can be directly displayed by routing a path to it.
 
-TODO Template tags
+Template documents can have php code inside the `<?php ... ?>` tags. The data passed by the controller to the view are directly exposed to the template context.
+
+##### Template tags
+
+Some template tags are available to make life easier for template writers.
+
+Currently available tags are:
+
+**Expression tag**
+
+`{{ expression }}` evaluates the php expression inside the tag and replaces the tag with the result.
+
+```php
+{{ $my_data_passed_from_controller }}
+{{ $user->username }}
+{{ str_replace("_", " ", $user->username)}}
+```
+
+**include**
+
+The `{% include 'template_file_name' %}` tags replaces the tag with the contents from *template_file_name* template.
+
+**url**
+
+The `{% url 'path' %}` returns the complete url for the object at the *path*. It basically prepends the path with the url of the root.
+
+**foreach ... endfor**
+
+The `{% foreach expression %}` evaluates php foreach on the given expression and start the loop block. The block is ended with `{% endfor %}`.
+
+```php
+{% foreach $array as $item}
+    {{ $item }}
+{% endfor %}
+```
+
+**if ... elseif ... else ... endif**
+
+These can be used for boolean testing php expressions and running a block of code only when conditions are met.
+
+```php
+{% if $test_condition1 %}
+    test_condition1 is true
+{% elseif $test_condition2 %}
+    test_condition2 is true
+{% else %}
+    all are false
+{% endif %}
+
+```
+
 
 ### Models
 

@@ -21,7 +21,7 @@ class ExampleController extends Controller
     public function get_test($username=null, $password=null)
     {
         $data = array(
-            "message" => "hello world!"
+            "message" => "hello world!",
         );
 
         if ($username && $password) {
