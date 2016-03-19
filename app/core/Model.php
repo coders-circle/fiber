@@ -121,8 +121,30 @@ class Model
             " ($keys) VALUES($values) " .
             " ON DUPLICATE KEY UPDATE $update_string";
 
+        if (!isset($this->id)) {
+            $this->id = $db->insert_id;
+        }
+
         $db->query_with_error($sql);
         $this->postsave();
+    }
+
+    public function delete() {
+        if (!isset($this->id))
+            return;
+
+        $sql = "DELETE FROM " . $this->get_table_name() .
+            " WHERE id=" . $this->id;
+
+        $db = Database::get_instance();
+        $db->query_with_error($sql);
+    }
+
+    public static function delete_all() {
+        $db = Database::get_instance();
+        $table = self::get_table_name();
+        $sql = "DELETE FROM $table";
+        $db->query_with_error($sql);
     }
 
     public static function get_from_query_result($result) {
@@ -190,6 +212,9 @@ class Model
                 if (!$max_length)
                     $max_length = 30;
                 $result = "VARCHAR($max_length)";
+                break;
+            case 'text':
+                $result = "TEXT";
                 break;
             case 'datetime':
                 $result = "DATETIME";

@@ -26,4 +26,10 @@ function get_item($array, $key, $default=null) {
     return $default;
 }
 
+function redirect($url, $status=303) {
+    $url = get_url($url);
+    header("Location: $url", true, $status);
+    die();
+}
+
 ?>

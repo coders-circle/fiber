@@ -23,8 +23,10 @@ class Template
 
         // TODO: verbose, comments
 
-        // regular expression for {% action bla-bla %} format
-        $action_regx = "[{%(.*)%}]";
+        // regular expression for {% action bla-bla %} format.
+        // The negative lookahead ((?!%).) gives any character except %}.
+        // This rejects nested match.
+        $action_regx = "[{%(((?!%}).)*)%}]";
         $num_actions = 0;
         do
         {
@@ -96,14 +98,17 @@ class Template
 
                     default:
                         // maybe throw some error
-                        $content = str_replace($matches[0][$i], "", $content);
+                        $replacement = "<?php " . $matches[1][$i] . "; ?>";
+                        $content = str_replace($matches[0][$i], $replacement, $content);
                     }
                 }
             }
         } while ($num_actions > 0);
 
-        // regular expression for {{ var }} format
-        $var_regx = "[{{(.*)}}]";
+        // regular expression for {{ var }} format.
+        // The negative lookahead ((?!}}).) gives any character except }}.
+        // This rejects nested matches.
+        $var_regx = "[{{(((?!}}).)*)}}]";
         if(preg_match_all($var_regx, $content, $matches))
         {
             for($i=0; $i < count($matches[0]); $i++ )

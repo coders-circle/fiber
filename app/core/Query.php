@@ -88,6 +88,34 @@ class Query
         return call_user_func(array($this->class_name, "get_from_query_result"), $result);
     }
 
+    // Delete using given selection.
+    public function delete() {
+        $db = Database::get_instance();
+        $table = call_user_func(array($this->class_name, "get_table_name"));
+
+        $selection = "";
+        if ($this->selection)
+            $selection = "WHERE " . $this->selection;
+
+        $sql = "DELETE FROM $table $selection";
+        $stmt = $db->prepare($sql);
+        if (!$stmt)
+            die($db->error . "<br> $sql");
+
+        $ptypes = $this->ptypes;
+        $params = array();
+
+        $params[] = &$ptypes;
+        for ($i=0; $i<count($this->params); ++$i)
+            $params[] = &$this->params[$i];
+
+        if (count($params) > 1)
+            call_user_func_array(array($stmt, "bind_param"), $params);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+    }
+
     public function first() {
         $objects = $this->get();
         if (count($objects)==0)
