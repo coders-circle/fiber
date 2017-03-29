@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>fiber-mvc</title>
+    {% include 'common-includes.html' %}
+
+    <style>
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        form .field {
+            display: inline-block;
+            padding: 8px;
+        }
+
+        form label {
+            display: inline-block;
+            width: 164px;
+        }
+
+        form .children-container {
+            margin: 4px;
+            padding: 4px;
+        }
+
+        form .children-container .child:nth-child(even) {
+            background-color: #e3e3e3;
+        }
+        form .children-container .child:nth-child(odd) {
+            background-color: #f3f3f3;
+        }
+
+        form .children-container .child .delete-child {
+            display: inline-block;
+            margin-left: 16px;
+        }
+
+        form .children-container .add-child {
+            display: inline-block;
+            padding: 8px;
+        }
+
+        input, textarea {
+            padding: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="title-block">
+        <div class="container">
+            <div class="title">Example Form</div>
+        </div>
+    </div>
+    <div id="content-block">
+        <div class="container">
+            <form>
+                {{ $form->generate() }}
+            </form>
+        </div>
+    </div>
+</body>
+</html>

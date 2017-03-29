@@ -32,4 +32,12 @@ function redirect($url, $status=303) {
     die();
 }
 
+function split_camel_case($str) {
+    return preg_replace('/(?!^)[A-Z]{2,}(?=[A-Z][a-z])|[A-Z][a-z]/', ' $0', $str);
+}
+
+function split_snake_case($str) {
+    return split_camel_case(to_camel_case($str));
+}
+
 ?>

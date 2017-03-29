@@ -10,8 +10,12 @@ class RouterBase
 
     private function get_path($php_self, $request_uri)
     {
-    	$basepath = implode('/', array_slice(explode('/', $php_self), 0, -1)) . '/';
-    	$uri = substr($request_uri, strlen($basepath));
+        $basepath = implode('/', array_slice(explode('/', $php_self), 0, -1)) . '/';
+        if (strpos($request_uri, $basepath) !== false) {
+            $uri = substr($request_uri, strlen($basepath));
+        } else {
+            $uri = $request_uri;
+        }
     	if (strstr($uri, '?'))
             $uri = substr($uri, 0, strpos($uri, '?'));
     	$uri = trim($uri, '/');

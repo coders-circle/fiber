@@ -2,6 +2,7 @@
 
 require_once "app/core/session/Auth.php";
 require_once "app/models/User.php";
+require_once "app/forms/ExampleForm.php";
 
 class ExampleController extends Controller
 {
@@ -18,8 +19,7 @@ class ExampleController extends Controller
         return new View("You have logged out successfully !");
     }
 
-    public function get_test($username=null, $password=null)
-    {
+    public function get_test($username=null, $password=null) {
         $data = array(
             "message" => "hello world!",
         );
@@ -45,8 +45,13 @@ class ExampleController extends Controller
         return new TemplateView('example.html', $data);
     }
 
-    public function get()
-    {
+    public function get_form() {
+        $data = array();
+        $data['form'] = new ExampleForm();
+        return new TemplateView('example_form.html', $data);
+    }
+
+    public function get() {
         $data = array(
             "message" => "Welcome to the land of awesomeness !"
         );

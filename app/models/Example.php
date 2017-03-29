@@ -9,7 +9,11 @@ class Example extends Model
 
     public function get_schema() {
         return array(
-            array("example_data", "string")
+            array("example_string", "string"),
+            array("example_integer", "integer"),
+            array("example_text", "text"),
+            array("example_datetime", "datetime"),
+            array("example_boolean", "boolean"),
         );
     }
 }

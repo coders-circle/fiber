@@ -16,7 +16,7 @@ define("DEBUG", true);
 function get_url($route)
 {
     $baseurl = $_SERVER['PHP_SELF'];
-    $baseurl = str_replace('index.php', '', $baseurl);
+    $baseurl = substr($baseurl, 0, strpos($baseurl, 'index.php')); // str_replace('index.php', '', $baseurl);
     return $baseurl.$route;
 }
 

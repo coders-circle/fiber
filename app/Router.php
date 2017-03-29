@@ -18,6 +18,9 @@ class Router extends RouterBase
 
             "^example/logout$"
                 => array('controller', 'ExampleController:logout'),
+
+            "^example/form$"
+                => array('controller', 'ExampleController:form'),
         );
     }
 }

@@ -35,8 +35,13 @@ class Model
                 $name = $item[0];
                 $type = self::get_sql_type($item);
 
+
                 if ($type && $name) {
-                    $sql .= ", `$name` $type NOT NULL";
+                    $sql .= ", `$name` $type";
+                }
+
+                if (!get_item($item, "null")) {
+                    $sql .= " NOT NULL";
                 }
 
                 $extra = get_item($item, "extra");
@@ -44,8 +49,7 @@ class Model
                     $sql .= " $extra";
                 }
 
-                $unique = get_item($item, "unique");
-                if ($unique) {
+                if (get_item($item, "unique")) {
                     $suffix .= ", UNIQUE KEY `$name` (`$name`)";
                 }
             }
@@ -95,7 +99,10 @@ class Model
 
             $val = $prop->getValue($this);
 
-            if ($types[$name] == "datetime") {
+            if (is_null($val)) {
+                $val = "NULL";
+            }
+            elseif ($types[$name] == "datetime") {
                 $time = $val->format("Y-m-d H:i:s");
                 $val = "'$time'";
             }
@@ -104,15 +111,15 @@ class Model
                 $val = "'$val'";
             }
 
-            if ($keys!="")
+            if ($keys != "")
                 $keys .= ",";
             $keys .= "$name";
 
-            if ($values!="")
+            if ($values != "")
                 $values .= ",";
             $values .= "$val";
 
-            if ($update_string!="")
+            if ($update_string != "")
                 $update_string .= ",";
             $update_string .= "$name=$val";
         }
@@ -163,7 +170,10 @@ class Model
                 }
 
                 foreach ($row as $key=>$val) {
-                    if ($types[$key] == "datetime")
+                    if (is_null($val)) {
+                        $obj->$key = null;
+                    }
+                    elseif ($types[$key] == "datetime")
                         $obj->$key = new DateTime($val);
                     else
                         $obj->$key = $val;
