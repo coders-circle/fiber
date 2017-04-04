@@ -4,7 +4,6 @@ require_once 'Query.php';
 
 class Model
 {
-
     public function get_schema() {
         return null;
     }
@@ -128,11 +127,11 @@ class Model
             " ($keys) VALUES($values) " .
             " ON DUPLICATE KEY UPDATE $update_string";
 
+        $db->query_with_error($sql);
+
         if (!isset($this->id)) {
             $this->id = $db->insert_id;
         }
-
-        $db->query_with_error($sql);
         $this->postsave();
     }
 
