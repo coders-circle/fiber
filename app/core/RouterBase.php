@@ -78,8 +78,8 @@ class RouterBase
             if (DEBUG) {
                 echo "<h1>404 Page Not Found</h1>";
                 echo "<div class='container'>";
-                echo "<p>Error message: <br>";
-                echo $e->getMessage()."</p>";
+                echo "<p>Error message: <br>".$e->getMessage()."</p>";
+                // echo "<p>Stack trace: <br>".$e->getTraceAsString()."</p>";
                 echo "</div>";
                 echo "<p> You are seeing this message because <b>DEBUG</b> is";
                 echo " enabled in your <b>config.php</b>. Set it to";
@@ -88,6 +88,23 @@ class RouterBase
             else {
                 $page->set_controller(null);
                 $page->set_template('404.html');
+                $page->generate();
+            }
+        }
+        catch (Exception $e) {
+            if (DEBUG) {
+                echo "<h1>500 Server Error</h1>";
+                echo "<div class='container'>";
+                echo "<p>Error message: <pre>".$e->getMessage()."</pre></p>";
+                echo "<p>Stack trace: <pre>".$e->getTraceAsString()."</pre></p>";
+                echo "</div>";
+                echo "<p> You are seeing this message because <b>DEBUG</b> is";
+                echo " enabled in your <b>config.php</b>. Set it to";
+                echo " <i>false</i> to see standard 500 page.</p>";
+            }
+            else {
+                $page->set_controller(null);
+                $page->set_template('500.html');
                 $page->generate();
             }
         }

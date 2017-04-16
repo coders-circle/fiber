@@ -105,6 +105,9 @@ class Model
                 $time = $val->format("Y-m-d H:i:s");
                 $val = "'$time'";
             }
+            elseif ($types[$name] == 'time') {
+                $time = date("H:i:s", $val);
+            }
             else {
                 $val = $db->real_escape_string($val);
                 $val = "'$val'";
@@ -174,6 +177,8 @@ class Model
                     }
                     elseif ($types[$key] == "datetime")
                         $obj->$key = new DateTime($val);
+                    elseif ($types[$key] == "time")
+                        $obj->$key = strtotime($val);
                     else
                         $obj->$key = $val;
                 }
@@ -227,6 +232,9 @@ class Model
                 break;
             case 'datetime':
                 $result = "DATETIME";
+                break;
+            case 'time':
+                $result = 'TIME';
                 break;
             case 'boolean':
                 $result = "BOOL";
