@@ -41,4 +41,9 @@ function split_snake_case($str) {
 }
 
 
+function slugify($string) {
+    return strtolower(trim(preg_replace('~[^\pL\d]+~u', '-', $string)));
+}
+
+
 ?>

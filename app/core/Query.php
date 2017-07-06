@@ -8,6 +8,7 @@ class Query
     protected $class_name;
     protected $projection;
     protected $selection;
+    protected $order_by;
     protected $params = array();
     protected $ptypes = "";
 
@@ -24,6 +25,7 @@ class Query
         for($i=1; $i<count($args); ++$i) {
             $arg = $args[$i];
             $type = gettype($arg);
+
             if ($type == "string") {
                 $this->ptypes .= 's';
                 $this->params[] = $arg;
@@ -38,7 +40,19 @@ class Query
             }
         }
 
-        $this->selection = $args[0];
+        $selection = '(' . $args[0] . ')';
+
+        if ($this->selection) {
+            $this->selection .= ' AND ' . $selection;
+        } else {
+            $this->selection = $selection;
+        }
+        return $this;
+    }
+
+    // Add order by
+    public function order_by($order_by) {
+        $this->order_by = $order_by;
         return $this;
     }
 
@@ -66,7 +80,11 @@ class Query
         if ($this->selection)
             $selection = "WHERE " . $this->selection;
 
-        $sql = "SELECT $projection FROM $table $selection";
+        $extra = "";
+        if ($this->order_by)
+            $extra .= "ORDER BY " . $this->order_by;
+
+        $sql = "SELECT $projection FROM $table $selection $extra";
         $stmt = $db->prepare($sql);
         if (!$stmt)
             die($db->error . "<br> $sql");
