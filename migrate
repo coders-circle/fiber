@@ -5,13 +5,25 @@
 set_include_path(__DIR__);
 require_once 'app/core/migration/Migration.php';
 
-// Get the model
-if (count($argv)==1) {
-    die("\tInvalid Syntax\n\tUsage: migrate model_name\n\n");
-}
-$model = $argv[1];
-// TODO: Check if model exists
+if (count($argv) > 1) {
+    // Get the model
+    $model = $argv[1];
+    // TODO: Check if model exists
 
-// Run the migrations
-Migration::run_migrations($model);
+    // Run the migrations
+    Migration::run_migrations($model);
+}
+else {
+    // Get all models
+    $files = scandir('app/models');
+    foreach ($files as $file) {
+        if (substr($file, -4) == '.php') {
+            $model = substr($file, 0, -4);
+            Migration::run_migrations($model);
+        }
+    }
+
+    // die("\tInvalid Syntax\n\tUsage: migrate model_name\n\n");
+}
+
 ?>

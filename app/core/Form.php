@@ -61,6 +61,8 @@ class Form {
                     $form .= '<input type="text" ' . $this->get_form_attrs($item, true) . '>';
                 } elseif ($type == 'integer') {
                     $form .= '<input type="number" ' . $this->get_form_attrs($item, true) . '>';
+                } elseif ($type == 'float') {
+                    $form .= '<input type="number" step="any" ' . $this->get_form_attrs($item, true) . '>';
                 } elseif ($type == 'boolean') {
                     $form .= '<input type="checkbox" ' . $this->get_form_attrs($item, true) . '>';
                 } elseif ($type == 'datetime') {
@@ -160,12 +162,12 @@ class Form {
         $name = $item[0];
         $type = $item[1];
 
-        $id = str_replace('_', '-', $item[0]);
+        $id = $this->prefix . str_replace('_', '-', $item[0]);
         $container = '<div class="child-container ' . ($item['custom_class'] ? $item['custom_class'] : '') . '" id="' . $id . '">';
 
         $form = new $item['form']();
 
-        $form->set_prefix($name . '_');
+        $form->set_prefix($this->prefix . $name . '_');
         if ($this->obj->$name) {
             $model_class = $form->get_model_class();
             $form->set_object($model_class::query()->where('id=?', $this->obj->$name)->first());
@@ -180,11 +182,11 @@ class Form {
         $name = $item[0];
         $type = $item[1];
 
-        $id = str_replace('_', '-', $item[0]);
+        $id = $this->prefix . str_replace('_', '-', $item[0]);
         $container = '<div class="children-container ' . ($item['custom_class'] ? $item['custom_class'] : '') . '" id="' . $id . '">';
 
         $form = new $item['form']();
-        $form->set_prefix($name . '_');
+        $form->set_prefix($this->prefix . $name . '_');
         $form->set_suffix('[]');
 
         $form->set_disabled();
@@ -203,7 +205,7 @@ class Form {
             }
         }
 
-        $singular_name = $item['singular'];
+        $singular_name = $this->prefix . $item['singular'];
         $container .= '<a class="add-child" onclick="add_' . $singular_name . '(this)">Add ' . split_snake_case($item['singular']) .'</a>';
         $container .= <<<SCRIPT
         <script>
@@ -325,7 +327,7 @@ SCRIPT;
                 }
                 elseif ($type == 'child') {
                     $form = new $item['form']();
-                    $form->set_prefix($name . '_');
+                    $form->set_prefix($this->prefix . $name . '_');
                     $model_class = $form->get_model_class();
                     // If exists, override it, otherwise create new
                     if ($this->obj->$name) {
@@ -339,7 +341,6 @@ SCRIPT;
         }
         $this->obj->save();
 
-
         // For type children, first we save the model and change foreign key of children models
         if ($this->obj->id && $schema) {
             foreach ($schema as $item) {
@@ -349,13 +350,13 @@ SCRIPT;
                 if ($type == 'children') {
                     $foreign_key = ($item['foreign_key']) ? $item['foreign_key'] : to_snake_case($this->get_model_class());
                     $form = new $item['form']();
-                    $form->set_prefix($name . '_');
+                    $form->set_prefix($this->prefix . $name . '_');
                     $model_class = $form->get_model_class();
 
                     $new_pks = [];
-                    for ($i=0; $i<count($_POST[$name . '_pk']); $i++) {
+                    for ($i=0; $i<count($_POST[$this->prefix . $name . '_pk']); $i++) {
                         $form->set_array_id($i);
-                        $pk = (int)$_POST[$name . '_pk'][$i];
+                        $pk = (int)$_POST[$this->prefix . $name . '_pk'][$i];
 
                         $new_obj = null;
                         if ($pk >= 0) {
@@ -363,6 +364,7 @@ SCRIPT;
                         } else {
                             $new_obj = new $model_class();
                         }
+
                         $new_obj->$foreign_key = $this->obj->id;
                         $form->set_object($new_obj);
                         $new = $form->post();

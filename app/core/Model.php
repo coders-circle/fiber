@@ -48,6 +48,11 @@ class Model
                     $sql .= " $extra";
                 }
 
+                $foreign = get_item($item, "foreign");
+                if ($foreign) {
+                    $suffix .= ", FOREIGN KEY (`$name`) REFERENCES `$foreign`(`id`) ON DELETE CASCADE";
+                }
+
                 if (get_item($item, "unique")) {
                     $suffix .= ", UNIQUE KEY `$name` (`$name`)";
                 }
@@ -62,7 +67,7 @@ class Model
 
     public function get_schema_fields() {
         $schema = $this->get_schema();
-        if ($schema) {
+        if (isset($schema)) {
             $fields = array('id');
             $types = array('id'=>'integer');
             foreach ($schema as $item) {
@@ -126,9 +131,13 @@ class Model
             $update_string .= "$name=$val";
         }
 
-        $sql = "INSERT INTO " . $this->get_table_name() .
-            " ($keys) VALUES($values) " .
-            " ON DUPLICATE KEY UPDATE $update_string";
+        if (empty($keys)) {
+            $sql = "INSERT INTO " . $this->get_table_name() . " (id) VALUES(null)";
+        } else {
+            $sql = "INSERT INTO " . $this->get_table_name() .
+                " ($keys) VALUES($values) " .
+                " ON DUPLICATE KEY UPDATE $update_string";
+        }
 
         $db->query_with_error($sql);
 
@@ -141,11 +150,25 @@ class Model
     public function delete() {
         if (!isset($this->id))
             return;
+        
+        $db = Database::get_instance();
+
+        $schema = $this->get_schema();
+        if ($schema) {
+            foreach ($schema as $item) {
+                $delete = get_item($item, "delete");
+                $name = $item[0];
+
+                if ($delete) {
+                    $sql = "DELETE FROM " . $delete .
+                        " WHERE `id`=" . $this->$name;
+                    $db->query_with_error($sql);
+                }
+            }
+        }
 
         $sql = "DELETE FROM " . $this->get_table_name() .
             " WHERE id=" . $this->id;
-
-        $db = Database::get_instance();
         $db->query_with_error($sql);
     }
 
